@@ -81,3 +81,17 @@ def generate_schedule_time_next_day(total_videos, videos_per_day = 1, daily_time
     if timestamps:
         schedule = [int(time.timestamp()) for time in schedule]
     return schedule
+
+def generate_schedule_time(total_videos, videos_per_day, daily_times=None, timestamps=False, start_days=0):
+    schedule = []
+    current_time = datetime.now()
+    current_hour = current_time.hour
+    
+    for hour in daily_times:
+        if current_hour < hour :
+            return current_time.replace(hour=hour, minute=0, second=0, microsecond=0)
+
+    next_day = (current_time + timedelta(days=1)).date()
+    return datetime.combine(next_day, datetime.min.time()).replace(hour=daily_times[0])
+
+    
