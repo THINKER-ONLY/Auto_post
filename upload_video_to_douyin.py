@@ -49,13 +49,13 @@ if __name__ == "__main__" :
     folders = [f for f in folder_path.glob("*") if f.is_dir()]
     account_file = Path(BASE_DIR / "cookies" / "douyin_uploader" / "account.json")
     for num in range(folders):
-        filepath_son = Path(BASE_DIR) / "videos" + f"_{num}"
+        filepath_son = Path(BASE_DIR) / "videos" / f"{num}"
         file_path_son = Path(filepath_son)
         files_son = list(filepath_son.glob("*.mp4"))
         file_num_son = len(files_son)
         publish_datetimes = generate_schedule_time(file_num_son, file_num_son, daily_times=[6, 10, 16])
         cookie_setup = asyncio.run(douyin_setup(account_file, handle=False))
-        for file in enumerate(files_son) :
+        for file in files_son :
             title, tags = get_title_and_hashtags(str(file))
             thumbnail_path = file.with_suffix('.png')
             print(f"视频文件名：{file}")
