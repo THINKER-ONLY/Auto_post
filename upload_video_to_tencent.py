@@ -43,9 +43,9 @@ if __name__ == "__main__" :
     folder_path = Path(folderpath)
     #folders = list(folder_path.glob("*"))
     folders = [f for f in folder_path.glob("*") if f.is_dir()]
+    account_file = Path(BASE_DIR / "cookies" / "tencent_uploader" / "account.json")
     for num in range(len(folders)) :
         filepath_son = Path(BASE_DIR) / "videos" + f"_{num}"
-        account_file = Path(BASE_DIR / "cookies" / "tencent_uploader" / "account.json")
         folder_path_son = Path(filepath_son)
         files_son = list(folder_path_son.glob("*.mp4"))
         file_num_son = len(files_son)
