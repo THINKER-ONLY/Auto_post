@@ -53,3 +53,4 @@ if __name__ == '__main__':
             print(f"Hashtag：{tags}")
             app = KSVideo(title, file, tags, publish_datetimes, account_file)
             asyncio.run(app.main(), debug=False)
+            

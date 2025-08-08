@@ -57,9 +57,10 @@ if __name__ == "__main__" :
         cookie_setup = asyncio.run(douyin_setup(account_file, handle=False))
         for file in files_son :
             title, tags = get_title_and_hashtags(str(file))
-            thumbnail_path = file.with_suffix('.png')
+            #thumbnail_path = file.with_suffix('.png')
             print(f"视频文件名：{file}")
             print(f"标题：{title}")
             print(f"Hashtag：{tags}")
             app = DouYinVideo(title, file, tags, publish_datetimes, account_file)
             asyncio.run(app.main(), debug=False)
+            break

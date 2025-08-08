@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from datetime import datetime
+from datetime import time
 from pathlib import Path
 
 from conf import BASE_DIR
@@ -94,4 +95,56 @@ def generate_schedule_time(total_videos, videos_per_day, daily_times=None, times
     next_day = (current_time + timedelta(days=1)).date()
     return datetime.combine(next_day, datetime.min.time()).replace(hour=daily_times[0])
 
+def time_contorller_fixed(total_videos, videos_per_day, video_per_time, daily_times):
+    """
+    根据当前时间，生成一个未来的视频发布时间表（修正版）。
+    - 修复了当某天名额用尽后，会低效地遍历完当天剩余时间点的问题。
+    - 结构更清晰，避免了潜在的无限循环风险。
+    """
+    # --- 初始化部分（与原版相同） ---
+    time_schedule = []
+    daily_times.sort()
+    current_time = datetime.now()
+    next_schedule_time = None
+
+    for hour in daily_times:
+        if current_time.hour < hour:
+            next_schedule_time = current_time.replace(hour=hour, minute=0, second=0, microsecond=0)
+            break
     
+    if next_schedule_time is None:
+        tomorrow = current_time.date() + timedelta(days=1)
+        next_schedule_time = datetime.combine(tomorrow, time(hour=daily_times[0]))
+
+    # --- 循环生成部分（核心逻辑修正） ---
+    while len(time_schedule) < total_videos:
+        videos_on_this_day = len([t for t in time_schedule if t.date() == next_schedule_time.date()])
+
+        # 如果当天的名额已经用完
+        if videos_on_this_day >= videos_per_day:
+            # 直接跳转到第二天的第一个时间点
+            next_day_date = next_schedule_time.date() + timedelta(days=1)
+            next_schedule_time = datetime.combine(next_day_date, time(hour=daily_times[0]))
+            continue # 使用 continue 立刻开始下一次循环，用新的时间点重新判断
+
+        # 如果名额没用完，就添加视频
+        for _ in range(video_per_time):
+            # 再次检查确保不会在本次添加中超过单日上限
+            if len(time_schedule) < total_videos and videos_on_this_day < videos_per_day:
+                time_schedule.append(next_schedule_time)
+                videos_on_this_day += 1
+            else:
+                break 
+        
+        # 添加完毕后，正常推进到下一个时间点
+        current_hour_index = daily_times.index(next_schedule_time.hour)
+        if current_hour_index + 1 < len(daily_times):
+            # 推进到今天的下一个时间点
+            next_hour = daily_times[current_hour_index + 1]
+            next_schedule_time = next_schedule_time.replace(hour=next_hour)
+        else:
+            # 推进到明天的第一个时间点
+            next_day_date = next_schedule_time.date() + timedelta(days=1)
+            next_schedule_time = datetime.combine(next_day_date, time(hour=daily_times[0]))
+
+    return time_schedule
