@@ -81,6 +81,6 @@ if __name__ == "__main__":
             title, tags = get_title_and_hashtags(str(video_file))
             print(f"正在处理: {video_file.name} (来自文件夹 {folder.name})")
             print(f"分配的发布时间: {publish_time.strftime('%Y-%m-%d %H:%M')}")
-            app = KSVideo(title, video_file, tags, publish_datetimes, account_file)
+            app = KSVideo(title, video_file, tags, publish_time, account_file)
             asyncio.run(app.main(), debug=False)
-        print(f"已完成上传 {video_file.name}。")
+        print("所有视频上传任务已完成。")

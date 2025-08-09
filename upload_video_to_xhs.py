@@ -1,15 +1,16 @@
 import configparser
 from pathlib import Path
 from time import sleep
-
+import asyncio
 from xhs import XhsClient
 
 from conf import BASE_DIR
 from utils.files_times import generate_schedule_time_next_day, get_title_and_hashtags, time_contorller
-from uploader.xhs_uploader.main import sign_local, beauty_print
+from uploader.xhs_uploader.main import sign_local, beauty_print, xiaohongshu_setup
 
 config = configparser.RawConfigParser()
 config.read(Path(BASE_DIR / "uploader" / "xhs_uploader" / "accounts.ini"))
+account_file = Path(BASE_DIR / "cookies" / "ks_uploader" / "account.json")
 
 """
 if __name__ == '__main__':
@@ -81,8 +82,9 @@ if __name__ == '__main__':
         print("时间表生成完毕。")
         print(publish_datetimes)
         print("\n正在执行一次性的 Cookie 设置...")
-        cookies = config['account1']['cookies']
-        xhs_client = XhsClient(cookies, sign=sign_local, timeout=60)
+        cookie_setup = asyncio.run(xiaohongshu_setup(account_file, handle=False))
+        #cookies = config['account1']['cookies']
+        xhs_client = XhsClient(cookie_setup, sign=sign_local, timeout=60)
         try:
             xhs_client.get_video_first_frame_image_id("3214")
         except:
