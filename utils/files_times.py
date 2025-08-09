@@ -95,7 +95,7 @@ def generate_schedule_time(total_videos, videos_per_day, daily_times=None, times
     next_day = (current_time + timedelta(days=1)).date()
     return datetime.combine(next_day, datetime.min.time()).replace(hour=daily_times[0])
 
-def time_contorller_fixed(total_videos, videos_per_day, video_per_time, daily_times):
+def time_contorller(total_videos, videos_per_day, video_per_time, daily_times):
     """
     根据当前时间，生成一个未来的视频发布时间表（修正版）。
     - 修复了当某天名额用尽后，会低效地遍历完当天剩余时间点的问题。
